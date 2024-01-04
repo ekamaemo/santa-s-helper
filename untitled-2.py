@@ -65,8 +65,7 @@ def account_button(screen, event):  # кнопка аккаунта
 
 def main_window(screen, n, a):
     screen.blit(a[n % 17], (0, 300))
-
-
+    
 def check_click_main_window(pos):
     mouse_x, mouse_y = pos
     # проверка на нажатие кнопки аккаунта
@@ -80,11 +79,9 @@ def check_click_main_window(pos):
     button_x, button_y = 60, 60
     distance = ((mouse_x - button_x) ** 2 + (mouse_y - button_y) ** 2) ** 0.5
     if distance <= button_radius:
-        return "старт"
-
-    # действие кнопки регистрации
-
-
+        return "старт"   
+    
+# действие кнопки регистрации
 def sign_up(name, password):
     con = sqlite3.connect("santa`s helper.db")
     names = list(con.cursor().execute("SELECT name FROM player"))
@@ -96,7 +93,6 @@ def sign_up(name, password):
     con.commit()
     con.close()
     return "Успешная регистрация!"
-
 
 # действие кнопки входа
 def sign_in(name, password):
@@ -110,7 +106,7 @@ def sign_in(name, password):
         return "Успешная авторизация!"
     else:
         return "Неправильный логин или пароль"
-
+    
 
 def check_click_registration(pos):
     x, y = pos
@@ -150,16 +146,15 @@ def check_click_registration(pos):
     elif 750 <= x <= 750 + 55 and 151 <= y <= 151 + 55:
         button = "close_registration_window"
     return button
-
-
+    
+        
 def registration_window(screen, reg_window):
     screen.blit(reg_window, (137, 120))
-
-
+    
 def game():
     pygame.init()
     size = 1000, 700
-    background_image = pygame.image.load("start_window.png")
+    background_image = pygame.image.load("start_window.png")    
     screen = pygame.display.set_mode(size)
     running = True
     # шрифт
@@ -168,9 +163,9 @@ def game():
     for n in range(17):
         image = pygame.transform.scale(load_image(f"gif{n}.webp"), (400, 400))
         gif_deer.append(image)
-    reg_window = pygame.image.load("registration_window.png")  # фон окна регистрации
-    account_window = pygame.image.load("account.png")  # фон окна аккаунта
-    account = None  # никто не зашёл в аккаунт
+    reg_window = pygame.image.load("registration_window.png") # фон окна регистрации
+    account_window = pygame.image.load("account.png") # фон окна аккаунта
+    account = None # никто не зашёл в аккаунт
     n = 0
     nick_name = ""
     password = ""
@@ -193,7 +188,7 @@ def game():
                         nick_name = ""
                         password = ""
                         text_in = ""
-                        text_up = ""
+                        text_up = ""                        
                     elif button.isdigit():
                         if len(password) < 4:
                             password += button
@@ -221,9 +216,9 @@ def game():
                 if flag_main_window:
                     button = check_click_main_window(event.pos)
                     if button == "старт":
-                        pass  # реализация старта, проверки на вход в аккаунт
+                        pass # реализация старта, проверки на вход в аккаунт
                     elif button == "аккаунт":
-                        flag_registration_window = True  # нужна проверка на вход в аккаунт, чтобы заново не выходить/входить
+                        flag_registration_window = True # нужна проверка на вход в аккаунт, чтобы заново не выходить/входить
                 if flag_account_window:
                     button = check_click_account_window(event.pos)
                     if button == "close":
@@ -241,7 +236,7 @@ def game():
         n += 1
         screen.blit(background_image, (0, 0))
         start_button(screen, event)
-        account_button(screen, event)
+        account_button(screen, event)        
         main_window(screen, n, gif_deer)
         # если открыто окно регистрации
         if flag_registration_window:
@@ -262,11 +257,11 @@ def game():
         if flag_account_window:
             screen.blit(account_window, (558, 116))
             # нарисовать аватвр игрока(залить цветом круг и поставитьт букву)
-
+            
         clock.tick(20)
         pygame.display.update()
-    pygame.quit()
-
-
+    pygame.quit()    
+    
 game()
-
+    
+    
