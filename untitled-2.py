@@ -3,6 +3,7 @@ import sys
 import os
 import math
 import sqlite3
+import random
 
 
 def load_image(name, colorkey=None):
@@ -22,6 +23,23 @@ def load_image(name, colorkey=None):
     return image
 
 
+def name(screen):  # название игры
+    title_font = pygame.font.Font("Roboto-BlackItalic.ttf", 48)
+    subtitle_font = pygame.font.Font("Roboto-CondensedItalic.ttf", 34)
+    title_text = title_font.render("Santa's Helper", True, (255, 0, 0))
+    title_rect = title_text.get_rect()
+    title_rect.center = (500, 100)
+    screen.blit(title_text, title_rect)
+    subtitle_text = subtitle_font.render("Merry Christmas!", True, (23, 100, 56))
+    subtitle_rect = subtitle_text.get_rect()
+    subtitle_rect.center = (490, 140)
+    screen.blit(subtitle_text, subtitle_rect)
+
+
+def start(gamer):
+    pass
+
+
 def check_click_account_window(pos):
     x, y = pos
     if 841 <= x <= 841 + 46 and 138 <= y <= 138 + 46:
@@ -30,7 +48,7 @@ def check_click_account_window(pos):
         return "enter from account"
 
 
-def start_button(screen, event):  # кнопка старта игры
+def start_button(screen):  # кнопка старта игры
     button_radius = 50
     button_x, button_y = 60, 60
     button_color = (239, 215, 90)
@@ -53,12 +71,12 @@ def start_button(screen, event):  # кнопка старта игры
     pygame.draw.polygon(screen, (90, 100, 45), (point_a, point_b, point_c))
 
 
-def account_button(screen, event):  # кнопка аккаунта
+def account_button(screen, letter="A", color=(255, 0, 0)):  # кнопка аккаунта
     button_radius = 50
     button_pos = button_x, button_y = 940, 60
     font = pygame.font.Font(None, 60)
-    pygame.draw.circle(screen, (255, 0, 0), button_pos, button_radius)
-    letter_surface = font.render("A", True, (255, 255, 255))
+    pygame.draw.circle(screen, color, button_pos, button_radius)
+    letter_surface = font.render(letter, True, (255, 255, 255))
     letter_rect = letter_surface.get_rect(center=button_pos)
     screen.blit(letter_surface, letter_rect)
 
@@ -83,29 +101,45 @@ def check_click_main_window(pos):
     
 # действие кнопки регистрации
 def sign_up(name, password):
-    con = sqlite3.connect("santa`s helper.db")
-    names = list(con.cursor().execute("SELECT name FROM player"))
-    names = [i[0] for i in names]
-    if name in names:
-        return "Этот никнейм уже занят"
-    zapros = f"INSERT INTO player(name, password, level) VALUES('{name}', {password}, 1)"
-    res = con.cursor().execute(zapros)
-    con.commit()
-    con.close()
-    return "Успешная регистрация!"
+    if name and password:
+        if len(password) == 4:
+            con = sqlite3.connect("santa_s_helper.db")
+            names = list(con.cursor().execute("SELECT name FROM player"))
+            names = [i[0] for i in names]
+            if name in names:
+                return "Этот никнейм уже занят"
+            zapros = f"INSERT INTO player(name, password, level, stars) VALUES('{name}', {password}, 1, 0)"
+            res = con.cursor().execute(zapros)
+            con.commit()
+            con.cursor().close()
+            con.close()
+            return "Успешная регистрация!"
+        else:
+            return "Пароль должен быть из 4 цифр"
+    else:
+        return "Введите логин и пароль"
 
 # действие кнопки входа
 def sign_in(name, password):
-    con = sqlite3.connect("santa`s helper.db")
-    zapros = f"SELECT password FROM player WHERE name='{name}'"
-    res = list(con.cursor().execute(zapros))
-    con.close()
-    if not res:
-        return "Такого аккаунта не существует"
-    elif str(res[0][0]) == password:
-        return "Успешная авторизация!"
+    if name and password:
+        con = sqlite3.connect("santa_s_helper.db")
+        zapros = f"SELECT password FROM player WHERE name='{name}'"
+        res = list(con.cursor().execute(zapros))
+        con.close()
+        if not res:
+            return "Такого аккаунта не существует"
+        elif str(res[0][0]) == password:
+            return "Успешная авторизация!"
+        else:
+            return "Неправильный логин или пароль"
     else:
-        return "Неправильный логин или пароль"
+        return "Введите логин и пароль"
+    
+def account_maker(name):
+    con = sqlite3.connect("santa_s_helper.db")
+    gamer = con.cursor().execute(f"SELECT * FROM player WHERE name='{name}'")
+    color = (random.randrange(0, 256), random.randrange(0, 256), random.randrange(0, 256))
+    return (list(gamer)[0], color)
     
 
 def check_click_registration(pos):
@@ -199,26 +233,37 @@ def game():
                     elif button == "sign_in":
                         font1 = pygame.font.Font(None, 30)
                         text = sign_in(nick_name, password)
+                        text_up = ""
                         if text != "Успешная авторизация!":
                             text_in = font1.render(text, 1, (128, 64, 21))
                         else:
                             flag_registration_window = False
                             flag_account_window = True
+                            account, color = account_maker(nick_name)
+                            nick_name, password, level, stars = account
+                            password = str(password)
                     elif button == "sign_up":
                         font1 = pygame.font.Font(None, 30)
                         text = sign_up(nick_name, password)
+                        text_in = ""
                         if text != "Успешная регистрация!":
                             text_up = font1.render(text, 1, (128, 64, 21))
                         else:
+                            account, color = account_maker(nick_name)
+                            nick_name, password, level, stars = account
+                            password = str(password)
                             flag_registration_window = False
                             flag_account_window = True
                 # если открыто окно старта
                 if flag_main_window:
                     button = check_click_main_window(event.pos)
-                    if button == "старт":
-                        pass # реализация старта, проверки на вход в аккаунт
+                    if button == "старт" and account:
+                        start(account) # реализация старта, проверки на вход в аккаунт
                     elif button == "аккаунт":
-                        flag_registration_window = True # нужна проверка на вход в аккаунт, чтобы заново не выходить/входить
+                        if account == None:
+                            flag_registration_window = True
+                        else:
+                            flag_account_window = True# нужна проверка на вход в аккаунт, чтобы заново не выходить/входить
                 if flag_account_window:
                     button = check_click_account_window(event.pos)
                     if button == "close":
@@ -226,6 +271,7 @@ def game():
                     elif button == "enter from account":
                         flag_account_window = False
                         flag_registration_window = True
+                        account = None
             elif event.type == pygame.KEYDOWN and flag_registration_window:
                 if event.key == pygame.K_BACKSPACE:
                     nick_name = nick_name[:-1]
@@ -235,8 +281,12 @@ def game():
                         nick_name += simbol
         n += 1
         screen.blit(background_image, (0, 0))
-        start_button(screen, event)
-        account_button(screen, event)        
+        start_button(screen)
+        name(screen)
+        if account == None:
+            account_button(screen) 
+        else:
+            account_button(screen, nick_name[0], color)  
         main_window(screen, n, gif_deer)
         # если открыто окно регистрации
         if flag_registration_window:
@@ -256,8 +306,15 @@ def game():
         # если открыто окно аккаунта
         if flag_account_window:
             screen.blit(account_window, (558, 116))
-            # нарисовать аватвр игрока(залить цветом круг и поставитьт букву)
-            
+            pygame.draw.circle(screen, color, (662 + 71, 150 + 71), 69)
+            font2 = pygame.font.Font(None, 130)
+            letter = font2.render(nick_name[0], 10, (128, 64, 21))
+            screen.blit(letter, (710, 173))
+            nick = font1.render(nick_name, 1, (128, 64, 21))
+            screen.blit(nick, (661,  305))
+            str_stars = font1.render(str(stars), 1, (128, 64, 21))
+            screen.blit(str_stars, (717, 410))
+            # нарисовать аватар игрока(залить цветом круг и поставить букву)
         clock.tick(20)
         pygame.display.update()
     pygame.quit()    
