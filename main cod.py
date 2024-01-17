@@ -439,7 +439,7 @@ def sign_up(name, password):
             if name in names:
                 return "Этот никнейм уже занят"
             zapros = f"INSERT INTO player(name, password, level, stars) VALUES('{name}', {password}, 1, 0)"
-            res = con.cursor().execute(zapros)
+            con.cursor().execute(zapros)
             con.commit()
             con.cursor().close()
             con.close()
@@ -560,6 +560,7 @@ def game():
     sound_wrong = pygame.mixer.Sound("wrong_choice.mp3")
     sound_right = pygame.mixer.Sound("right_choice.mp3")
     start_sound = pygame.mixer.Sound("start_sound.mp3")
+    sound_get_stars = pygame.mixer.Sound("sound_get_stars.mp3")
     sound_door_bell = pygame.mixer.Sound("door_bell.mp3")
     sound_fall = pygame.mixer.Sound("sound_fall.mp3")
     reg_window = pygame.image.load("registration_window.png")  # фон окна регистрации
@@ -744,7 +745,7 @@ def game():
                         if not account:
                             flag_registration_window = True
                         else:
-                            flag_account_window = True  # нужна проверка на вход в аккаунт, чтобы заново не выходить/входить
+                            flag_account_window = True
                 if flag_account_window:
                     button = check_click_account_window(event.pos)
                     if button == "close":
@@ -770,10 +771,10 @@ def game():
                         x, y = 540, 0
                         pos = search_for_free_place(comps, dict_excess_components)
                         checkboxes, components, dict_excess_components = add_excess_component_to_gift(button, pos,
-                                                                                                      checkbox_dont,
-                                                                                                      checkboxes,
-                                                                                                      components,
-                                                                                                      dict_excess_components)
+                                                                              checkbox_dont,
+                                                                              checkboxes,
+                                                                              components,
+                                                                              dict_excess_components)
                         components_in_gift.append(button)
                     else:
                         for pos in dict_excess_components:
@@ -786,8 +787,8 @@ def game():
                 if flag_shop_window:
                     if flag_give_away:
                         if event.button == 1:
-                            if image_x <= event.pos[0] <= image_x + image_width and image_y <= event.pos[
-                                1] <= image_y + image_height:
+                            if image_x <= event.pos[0] <= image_x + image_width and\
+                            image_y <= event.pos[1] <= image_y + image_height:
                                 moving = True
                 if flag_finish_day:
                     button = check_click_finish_window(event.pos)
@@ -835,7 +836,7 @@ def game():
             screen.blit(background_image, (0, 0))
             start_button(screen)
             name(screen)
-            if account == None:
+            if account is None:
                 account_button(screen)
             else:
                 account_button(screen, nick_name[0], color)
@@ -923,7 +924,7 @@ def game():
                 screen.blit(t1, t[0])
             txt = font_message.render(text_message, True, (164, 64, 21))
             screen.blit(txt, (keys_phrase[count_strok]))
-            if phraseWHAT != None:
+            if phraseWHAT is not None:
                 button_OK(screen)
                 button_what(screen)
                 button = check_buttons_window2(event)
@@ -931,7 +932,6 @@ def game():
                     phrase = render_phrase(phraseWHAT)
                     text_character = []
                     count_strok = 0
-                    flag_phraseWHAT = False
                     text_message = ""
                 elif button == "ОК" and not flag_view and not flag_give_away:
                     if level == 7:
@@ -964,6 +964,7 @@ def game():
                     flag_phrase = True
                     text_message = ""
                     stars = plus_stars(k, stars, client[5])
+                    sound_get_stars.play()
             else:
                 button_OK(screen)
                 button = check_buttons_window2(event)
@@ -985,7 +986,7 @@ def game():
                 dict_excess_components = {}
                 components_in_gift = []
                 comps = game_level[count_people][4]
-                if comps != None:
+                if comps is not None:
                     comps = comps.split()
                     if comps[0] == "all":
                         comps = all_components
