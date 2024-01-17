@@ -535,6 +535,8 @@ def game():
     checkbox_uncheck = pygame.transform.scale(pygame.image.load("uncheck.png"), (70, 70)) # картинка пустого чекбокса
     checkbox_dont = pygame.transform.scale(pygame.image.load("dont.png"), (70, 70)) # картинка чекбокса с крестиком
     screen = pygame.display.set_mode(size)
+    pygame.display.set_caption("Santa`s helper")
+    pygame.display.set_icon(pygame.image.load("santa.bmp"))
     screen.blit(background_image, (0, 0))
     running = True
     level_duration = 360000
