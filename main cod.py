@@ -9,33 +9,33 @@ import random
 class CheckBox(pygame.sprite.Sprite):
     def __init__(self, unchecked_image, checked_image, pos):
         super().__init__()
-        
+
         self.image_unchecked = unchecked_image
         self.image_checked = checked_image
         self.image = unchecked_image
         self.checked_checkbox = False
         self.rect = self.image.get_rect()
         self.rect.topleft = pos
-        
+
     def update(self):
         if self.checked_checkbox:
             self.image = self.image_checked
         else:
             self.image = self.image_unchecked
-            
-            
+
+
 class Component(pygame.sprite.Sprite):
     def __init__(self, checked_image, unchecked_image, pos):
         super().__init__()
-        
+
         self.image_checked = checked_image
         self.image_unchecked = unchecked_image
         self.image = self.image_unchecked
         self.checked = False
-        
+
         self.rect = self.image.get_rect()
         self.rect.topleft = pos
-    
+
     def update(self):
         if self.checked:
             self.image = self.image_checked
@@ -65,8 +65,8 @@ def check_form_gift(right_components, all_components):
     if len(all_components):
         return c / len(all_components)
     return 0
-            
-            
+
+
 def render_phrase(phrase):
     phrase = phrase.split()
     new_phrase = {}
@@ -82,14 +82,14 @@ def render_phrase(phrase):
             y += 25
     new_phrase[x, y] = stroka
     return new_phrase
-        
+
 
 def add_excess_component_to_gift(button, pos, checkbox_dont, checkboxes, components, dict_excess_components):
     position = pos
     position2 = pos[0] + 90, pos[1]
     image = pygame.transform.scale(load_image(f"{button}.png"), (70, 70))
     excess_component = Component(image, image, position)
-    excess_checkbox = CheckBox(checkbox_dont, checkbox_dont, position2)                    
+    excess_checkbox = CheckBox(checkbox_dont, checkbox_dont, position2)
     checkboxes.add(excess_checkbox)
     components.add(excess_component)
     dict_excess_components[position2] = [excess_component, excess_checkbox, button]
@@ -106,8 +106,8 @@ def search_for_free_place(comps, dict_excess_components):
             pos2 = 260, 85 + (i - 7) * 79
         if pos2 not in dict_excess_components:
             return pos
-        
-        
+
+
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
     # если файл не существует, то выходим
@@ -122,8 +122,8 @@ def load_image(name, colorkey=None):
         image.set_colorkey(colorkey)
     else:
         image = image.convert_alpha()
-    return image  
-    
+    return image
+
 
 def start_again(account):
     nickname = account[0]
@@ -132,14 +132,14 @@ def start_again(account):
     con.cursor().execute(f"UPDATE player SET stars = 0 WHERE name = '{nickname}'")
     con.commit()
     con.close()
-    
-    
-def load_level(level): # функция загрузки уровня по числу уровня
+
+
+def load_level(level):  # функция загрузки уровня по числу уровня
     con = sqlite3.connect("santa_s_helper.db")
     level = list(con.cursor().execute(f"SELECT * FROM client WHERE level={level}").fetchall())
     con.close()
     level = list(sorted(level, key=lambda x: x[1]))
-    return level # возвращает список клиентов, которые приходят за уровень
+    return level  # возвращает список клиентов, которые приходят за уровень
 
 
 def load_list_image_load(n):
@@ -206,7 +206,7 @@ def load_receipt(comps, checkbox_uncheck, checkbox_check):
         component = Component(comps_ch[i], comps_un[i], pos)
         components.add(component)
         checkbox = CheckBox(checkbox_uncheck, checkbox_check, pos2)
-        checkboxes.add(checkbox)   
+        checkboxes.add(checkbox)
         dict_comps_and_checks[comps[i]] = [component, checkbox]
     return (components, checkboxes, dict_comps_and_checks, pos)
 
@@ -224,7 +224,7 @@ def load_gif_dark():
     gif_darkness = []
     for i in range(1, 11):
         dark = pygame.image.load(f"dark{i}.png")
-        gif_darkness.append(dark) 
+        gif_darkness.append(dark)
     for i in range(1, 19):
         image = pygame.transform.scale(pygame.image.load(f"tree{i}.jpg"), (1000, 700))
         gif_darkness.append(image)
@@ -245,16 +245,16 @@ def load_gif_santa():
         santa = pygame.image.load(f"s{i}.gif")
         gif_santa.append(santa)
     return gif_santa
-        
-    
+
+
 def stars_for_shop_window(screen, stars):
-    font2 = pygame.font.Font(None, 50)    
+    font2 = pygame.font.Font(None, 50)
     stars = font2.render(str(stars), 2, (128, 64, 21))
     stars_rect = stars.get_rect()
     stars_rect.center = (950, 335)
     screen.blit(stars, stars_rect)
-    
-    
+
+
 def return_elem(pos):
     x, y = pos
     elem = ""
@@ -299,7 +299,7 @@ def button_OK(screen):
     pygame.draw.rect(screen, (240, 200, 200), (rect_x, rect_y, rect_width, rect_height), border_radius=100)
     letter_surface = font.render("OK", True, (128, 64, 21))
     screen.blit(letter_surface, (760, 405))
-    
+
 
 def button_what(screen):
     button_pos = (730, 290)
@@ -309,6 +309,7 @@ def button_what(screen):
     pygame.draw.rect(screen, (240, 200, 200), (rect_x, rect_y, rect_width, rect_height), border_radius=100)
     letter_surface = font.render("Что?", True, (128, 64, 21))
     screen.blit(letter_surface, (750, 315))
+
 
 def check_buttons_window2(event):
     if event.type == pygame.MOUSEBUTTONDOWN:
@@ -325,10 +326,10 @@ def check_buttons_window2(event):
 def appearence_person(screen, image, dialog):
     screen.blit(image, (284, 167))
     screen.blit(dialog, (560, 149))
-    
+
 
 def usual_clock(time):
-    real_minutes = time / 60000 
+    real_minutes = time / 60000
     if real_minutes * 100 % 100 < 25 or 75 > real_minutes * 100 % 100 > 50:
         minutes = "00"
     else:
@@ -336,8 +337,8 @@ def usual_clock(time):
     game_time = 10 + time * 2 // 60000
     time = str(game_time) + ":" + minutes
     return time
-    
-    
+
+
 def name(screen):  # название игры
     title_font = pygame.font.Font("Roboto-BlackItalic.ttf", 48)
     subtitle_font = pygame.font.Font("Roboto-CondensedItalic.ttf", 34)
@@ -394,21 +395,21 @@ def account_button(screen, letter="A", color=(255, 0, 0)):  # кнопка ак�
 
 def main_window(screen, n, a):
     screen.blit(a[n % 17], (0, 300))
-    
-    
+
+
 def check_click_finish_window(pos):
     x, y = pos
     if 361 <= x <= 361 + 119 and 505 <= y <= 505 + 74:
         return "again"
     elif 531 <= x <= 531 + 119 and 505 <= y <= 505 + 74:
         return "next"
-    
-    
+
+
 def check_click_main_window(pos):
     mouse_x, mouse_y = pos
     # проверка на нажатие кнопки аккаунта
     button_radius = 50
-    button_pos = button_x, button_y = 940, 60
+    button_x, button_y = 940, 60
     distance = ((mouse_x - button_x) ** 2 + (mouse_y - button_y) ** 2) ** 0.5
     if distance <= button_radius:
         return "аккаунт"
@@ -417,17 +418,17 @@ def check_click_main_window(pos):
     button_x, button_y = 60, 60
     distance = ((mouse_x - button_x) ** 2 + (mouse_y - button_y) ** 2) ** 0.5
     if distance <= button_radius:
-        return "старт"   
+        return "старт"
 
 
 def level_up(account, stars):
     con = sqlite3.connect("santa_s_helper.db")
     con.cursor().execute(f"UPDATE player SET level = level + 1 WHERE name = '{account[0]}'")
     con.cursor().execute(f"UPDATE player SET stars = {stars} WHERE name = '{account[0]}'")
-    con. commit()
+    con.commit()
     con.close()
-    
-    
+
+
 # действие кнопки регистрации
 def sign_up(name, password):
     if name and password:
@@ -448,6 +449,7 @@ def sign_up(name, password):
     else:
         return "Введите логин и пароль"
 
+
 # действие кнопки входа
 def sign_in(name, password):
     if name and password:
@@ -463,14 +465,14 @@ def sign_in(name, password):
             return "Неправильный логин или пароль"
     else:
         return "Введите логин и пароль"
-    
-    
+
+
 def account_maker(name):
     con = sqlite3.connect("santa_s_helper.db")
     gamer = con.cursor().execute(f"SELECT * FROM player WHERE name='{name}'")
     color = (random.randrange(0, 256), random.randrange(0, 256), random.randrange(0, 256))
     return (list(gamer)[0], color)
-    
+
 
 def check_click_finish_game_window(pos):
     x, y = pos
@@ -478,8 +480,8 @@ def check_click_finish_game_window(pos):
         return "again"
     elif 612 <= x <= 612 + 238 and 614 <= y <= 614 + 54:
         return "over"
-    
-    
+
+
 def check_click_registration(pos):
     x, y = pos
     button = ""
@@ -518,22 +520,23 @@ def check_click_registration(pos):
     elif 750 <= x <= 750 + 55 and 151 <= y <= 151 + 55:
         button = "close_registration_window"
     return button
-    
-        
+
+
 def registration_window(screen, reg_window):
     screen.blit(reg_window, (137, 120))
-    
+
+
 def game():
     pygame.init()
     size = 1000, 700
-    background_image = pygame.image.load("start_window.png") 
+    background_image = pygame.image.load("start_window.png")
     shop_image = pygame.image.load("прилавок.png")
     load_window = pygame.image.load("load_window.png")
     dialog = pygame.image.load("big_dialog.png")
-    receipt = pygame.image.load("receipt.png") # картинка чека
-    checkbox_check = pygame.transform.scale(pygame.image.load("check.png"), (70, 70)) # картинка чекбокса с галочкой
-    checkbox_uncheck = pygame.transform.scale(pygame.image.load("uncheck.png"), (70, 70)) # картинка пустого чекбокса
-    checkbox_dont = pygame.transform.scale(pygame.image.load("dont.png"), (70, 70)) # картинка чекбокса с крестиком
+    receipt = pygame.image.load("receipt.png")  # картинка чека
+    checkbox_check = pygame.transform.scale(pygame.image.load("check.png"), (70, 70))  # картинка чекбокса с галочкой
+    checkbox_uncheck = pygame.transform.scale(pygame.image.load("uncheck.png"), (70, 70))  # картинка пустого чекбокса
+    checkbox_dont = pygame.transform.scale(pygame.image.load("dont.png"), (70, 70))  # картинка чекбокса с крестиком
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption("Santa`s helper")
     pygame.display.set_icon(pygame.image.load("santa.bmp"))
@@ -541,7 +544,7 @@ def game():
     running = True
     level_duration = 360000
     all_components = ["мыло", "шоколадка", "носки", "варежки", "подушка", "кружка", "шапка", "свитер", "игрушка",
-                      "календарь", "плед", "сладости", "леденец", "блокнот"]    
+                      "календарь", "плед", "сладости", "леденец", "блокнот"]
     # шрифт
     font = pygame.font.Font(None, 45)
     gif_deer = []
@@ -554,70 +557,71 @@ def game():
         cats.append(image)
     pygame.mixer.music.load("main theme.mp3")
     pygame.mixer.music.play(-1)
-    reg_window = pygame.image.load("registration_window.png") # фон окна регистрации
-    account_window = pygame.image.load("account.png") # фон окна аккаунта
+    sound_wrong = pygame.mixer.Sound("wrong_choice.mp3")
+    sound_right = pygame.mixer.Sound("right_choice.mp3")
+    start_sound = pygame.mixer.Sound("start_sound.mp3")
+    sound_door_bell = pygame.mixer.Sound("door_bell.mp3")
+    sound_fall = pygame.mixer.Sound("sound_fall.mp3")
+    reg_window = pygame.image.load("registration_window.png")  # фон окна регистрации
+    account_window = pygame.image.load("account.png")  # фон окна аккаунта
     assambley_window = pygame.image.load("assambley window.png")
     finish_window = pygame.image.load("finish window.png")
     day_over_window = pygame.image.load("day over.png")
     finish_background = pygame.image.load("finish background.png")
-    
     font_message = pygame.font.Font(None, 36)
-    flag_phrase = True # флаг для единичной загрузки сообщения персонажа
+    flag_phrase = True  # флаг для единичной загрузки сообщения персонажа
     flag_phraseWHAT = False
     text_message = ""
     k = 0
-    
     d = True
-    
     flag_give_away = False
-    
-    gifts = [] # список изображений подарков(коробок)
+    gifts = []  # список изображений подарков(коробок)
     for i in range(1, 8):
         gift = pygame.image.load(f"present{i}.png")
         gifts.append(gift)
-    image_width, image_height = 150, 150 # параметры картинки подарка
+    image_width, image_height = 150, 150  # параметры картинки подарка
     image_x = 330
-    image_y = 543    
+    image_y = 543
     moving = False
-    
+
     gif_santa = load_gif_santa()
     gif_darkness = load_gif_dark()
     gif_gift = load_gif_gift()
     finish_gif = load_finish_gif()
-        
-    account = None # никто не зашёл в аккаунт
+
+    account = None  # никто не зашёл в аккаунт
     n = 0
-    falling_image = "" # падающий в подарок компонент подарка
+    falling_image = ""  # падающий в подарок компонент подарка
     nick_name = ""
     password = ""
     text_in = ""
     text_up = ""
-    flag_give_away = False # флаг отдачи подарка клиенту (для движения подарка)
-    flag_view = False # флаг отзыва клиента
-    flag_registration_window = False # флаг окна регистрации
-    flag_main_window = True # флаг стартового окна
-    flag_account_window = False # флаг окна аккаунта
-    flag_shop_window = False # флаг окна прилавка
+    flag_give_away = False  # флаг отдачи подарка клиенту (для движения подарка)
+    flag_view = False  # флаг отзыва клиента
+    flag_registration_window = False  # флаг окна регистрации
+    flag_main_window = True  # флаг стартового окна
+    flag_account_window = False  # флаг окна аккаунта
+    flag_shop_window = False  # флаг окна прилавка
     flag_assambley_window = False  # флаг окна сборки подарка
-    flag_character = False # флаг персонажа-покупателя
-    flag_finish_day = False # флаг для показа окна окончания дня/уровня
-    flag_load_darkness = False # флаг потемнения, наступления ночи
-    flag_wrapping_gift = False # флаг гифки с запаковыванием подарка
+    flag_character = False  # флаг персонажа-покупателя
+    flag_finish_day = False  # флаг для показа окна окончания дня/уровня
+    flag_load_darkness = False  # флаг потемнения, наступления ночи
+    flag_wrapping_gift = False  # флаг гифки с запаковыванием подарка
     flag_finish_game = False
-    darkness = 0 # счётчик картинки, отвечающей за наступление темноты
-    count_gif_gift = 0 # счётчик картинки, отвечающей за запаковку подарку
-    gif_x = 0 # нужно для отрисовки загрузки
-    count_people = 0 # количество людей, пришедших на уровне
+    darkness = 0  # счётчик картинки, отвечающей за наступление темноты
+    count_gif_gift = 0  # счётчик картинки, отвечающей за запаковку подарку
+    gif_x = 0  # нужно для отрисовки загрузки
+    count_people = 0  # количество людей, пришедших на уровне
     flag_load = False
     EVENT_GETTING_DARK = pygame.USEREVENT + 1
     DELAY_GETTING_DARK = 200
-    
+
     EVENT_WRAPPING_GIFT = pygame.USEREVENT + 1
     DELAY_WRAPPING_GIFT = 100
-    
+
     EVENT_LOAD = pygame.USEREVENT + 1
     DELAY_LOAD = 25
-    
+
     EVENT_FINISH_GAME = pygame.USEREVENT + 1
     DELAY_FINISH_GAME = 100
     clock = pygame.time.Clock()
@@ -646,10 +650,10 @@ def game():
                 if count_gif_gift + 1 == len(gif_gift) * 4:
                     flag_wrapping_gift = False
                     flag_give_away = True
-                    image_width, image_height = 150, 150 # параметры картинки подарка
+                    image_width, image_height = 150, 150  # параметры картинки подарка
                     image_x = 330
-                    image_y = 543    
-                    moving = False 
+                    image_y = 543
+                    moving = False
                     flag_shop_window = True
                     flag_character = True
                     d = True
@@ -662,6 +666,7 @@ def game():
                 gif_rect = gif_load_image.get_rect()
                 gif_rect.center = (500, 350)
                 screen.blit(gif_load_image, gif_rect)
+                start_sound.play()
                 if gif_x < 352:
                     gif_x += 2
                     pygame.draw.rect(screen, (128, 64, 32), (320, 600, 360, 50), 4)
@@ -669,9 +674,9 @@ def game():
                     flag_registration_window = False
                     flag_main_window = False
                     flag_account_window = False
-                elif list_load_image not in (gif_santa, ):
+                elif list_load_image not in (gif_santa,):
                     flag_load = False
-                    flag_assambley_window = True  
+                    flag_assambley_window = True
                     gif_x = 0
                 else:
                     flag_load = False
@@ -679,9 +684,9 @@ def game():
                     level_started = True
                     account, color = account_maker(nick_name)
                     nick_name, password, level, stars = account
-                    password = str(password)                    
+                    password = str(password)
                     count_people = 0
-                    gif_x = 0    
+                    gif_x = 0
             elif event.type == EVENT_FINISH_GAME and flag_finish_game:
                 screen.blit(finish_background, (0, 0))
                 screen.blit(finish_gif[count_finish_picture], (100, 13))
@@ -696,7 +701,7 @@ def game():
                         nick_name = ""
                         password = ""
                         text_in = ""
-                        text_up = ""                        
+                        text_up = ""
                     elif button.isdigit():
                         if len(password) < 4:
                             password += button
@@ -732,14 +737,14 @@ def game():
                 if flag_main_window:
                     button = check_click_main_window(event.pos)
                     if button == "старт" and account:
-                        flag_load = True # реализация старта, проверки на вход в аккаунт
+                        flag_load = True  # реализация старта, проверки на вход в аккаунт
                         pygame.time.set_timer(EVENT_LOAD, DELAY_LOAD)
                         list_load_image = gif_santa
                     elif button == "аккаунт":
-                        if account == None:
+                        if not account:
                             flag_registration_window = True
                         else:
-                            flag_account_window = True# нужна проверка на вход в аккаунт, чтобы заново не выходить/входить
+                            flag_account_window = True  # нужна проверка на вход в аккаунт, чтобы заново не выходить/входить
                 if flag_account_window:
                     button = check_click_account_window(event.pos)
                     if button == "close":
@@ -751,21 +756,24 @@ def game():
                 if flag_assambley_window:
                     button = return_elem(event.pos)
                     if button == "ВЫДАТЬ":
-                        flag_assambley_window = False                        
+                        flag_assambley_window = False
                         flag_wrapping_gift = True
                         pygame.time.set_timer(EVENT_WRAPPING_GIFT, DELAY_WRAPPING_GIFT)
                     elif button in dict_comps_and_checks and button not in components_in_gift:
                         falling_image = load_image(button + ".png")
-                        x, y = 540, 0                        
+                        x, y = 540, 0
                         dict_comps_and_checks[button][0].checked = True
                         dict_comps_and_checks[button][1].checked_checkbox = True
                         components_in_gift.append(button)
                     elif button not in components_in_gift and button:
                         falling_image = load_image(button + ".png")
-                        x, y = 540, 0                        
+                        x, y = 540, 0
                         pos = search_for_free_place(comps, dict_excess_components)
-                        checkboxes, components, dict_excess_components = add_excess_component_to_gift(button, pos, checkbox_dont, checkboxes,
-                                                                                                      components, dict_excess_components)
+                        checkboxes, components, dict_excess_components = add_excess_component_to_gift(button, pos,
+                                                                                                      checkbox_dont,
+                                                                                                      checkboxes,
+                                                                                                      components,
+                                                                                                      dict_excess_components)
                         components_in_gift.append(button)
                     else:
                         for pos in dict_excess_components:
@@ -774,13 +782,14 @@ def game():
                                 dict_excess_components[pos][1].kill()
                                 del components_in_gift[components_in_gift.index(dict_excess_components[pos][2])]
                                 del dict_excess_components[pos]
-                                break                    
+                                break
                 if flag_shop_window:
                     if flag_give_away:
                         if event.button == 1:
-                            if image_x <= event.pos[0] <= image_x + image_width and image_y <= event.pos[1] <= image_y + image_height:
-                                moving = True                
-                if flag_finish_day:                   
+                            if image_x <= event.pos[0] <= image_x + image_width and image_y <= event.pos[
+                                1] <= image_y + image_height:
+                                moving = True
+                if flag_finish_day:
                     button = check_click_finish_window(event.pos)
                     if button == "again":
                         flag_finish_day = False
@@ -789,7 +798,7 @@ def game():
                         stars = account[-1]
                         pygame.time.set_timer(EVENT_LOAD, DELAY_LOAD)
                     elif button == "next":
-                        level_up(account, stars)# функция с повышением уровня и занесением в бд
+                        level_up(account, stars)  # функция с повышением уровня и занесением в бд
                         flag_main_window = True
                         flag_finish_day = False
                         level += 1
@@ -820,18 +829,18 @@ def game():
                     offset_x = event.rel[0]
                     offset_y = event.rel[1]
                     image_x += offset_x
-                    image_y += offset_y     
+                    image_y += offset_y
         n += 1
         if flag_main_window:
             screen.blit(background_image, (0, 0))
             start_button(screen)
-            name(screen)  
+            name(screen)
             if account == None:
-                account_button(screen) 
+                account_button(screen)
             else:
-                account_button(screen, nick_name[0], color)  
-            main_window(screen, n, gif_deer)  
-        # если открыто окно регистрации
+                account_button(screen, nick_name[0], color)
+            main_window(screen, n, gif_deer)
+            # если открыто окно регистрации
         if flag_registration_window:
             registration_window(screen, reg_window)
             text = font.render(nick_name, 1, (128, 64, 21))
@@ -854,7 +863,7 @@ def game():
             letter = font2.render(nick_name[0], 10, (128, 64, 21))
             screen.blit(letter, (710, 173))
             nick = font1.render(nick_name, 1, (128, 64, 21))
-            screen.blit(nick, (661,  305))
+            screen.blit(nick, (661, 305))
             str_stars = font1.render(str(stars), 1, (128, 64, 21))
             screen.blit(str_stars, (717, 410))
         if flag_shop_window:
@@ -866,15 +875,16 @@ def game():
             current_time = pygame.time.get_ticks()
             time = current_time - start_time
             time_clock = usual_clock(time)
-            font_time = pygame.font.Font(None, 23) 
+            font_time = pygame.font.Font(None, 23)
             time_clock = font_time.render(time_clock, 2, (128, 64, 21))
             stars_for_shop_window(screen, stars)
-            screen.blit(time_clock, (934, 94))          
+            screen.blit(time_clock, (934, 94))
             if time > level_duration:
                 flag_shop_window = False
                 level_started = True
                 flag_character = False
                 flag_load_darkness = True
+                pygame.time.set_timer(EVENT_GETTING_DARK, DELAY_GETTING_DARK)
             gift_rect = pygame.Rect(image_x, image_y, 150, 150)
             client_rect = pygame.Rect(284, 167, 298, 364)
             if gift_rect.colliderect(client_rect) and not moving and flag_give_away:
@@ -882,34 +892,37 @@ def game():
                 k = check_form_gift(comps, components_in_gift)
                 if k >= 0.8:
                     phrase = render_phrase(client[8])
+                    sound_right.play()
                 else:
                     phrase = render_phrase(client[9])
                     character_image = load_image(client[7], -1)
-                flag_view = True          
+                    sound_wrong.play()
+                flag_view = True
                 text_message = ""
         if flag_character:
             client = load_level(level)[count_people]
             if flag_phrase:
+                sound_door_bell.play()
                 character_image = load_image(client[6], -1)
                 phrase = render_phrase(client[2])
-                phraseWHAT = client[3] 
+                phraseWHAT = client[3]
                 flag_phrase = False
                 count_strok = 0
                 text_character = []
-            keys_phrase = list(phrase.keys())    
-            appearence_person(screen, character_image, dialog)            
+            keys_phrase = list(phrase.keys())
+            appearence_person(screen, character_image, dialog)
             if phrase[keys_phrase[count_strok]]:
                 text_message += phrase[keys_phrase[count_strok]][0]
                 phrase[keys_phrase[count_strok]] = phrase[keys_phrase[count_strok]][1:]
             elif count_strok < len(keys_phrase) - 1:
                 text_character.append((keys_phrase[count_strok], text_message))
-                text_message = ""  
-                count_strok += 1                
+                text_message = ""
+                count_strok += 1
             for t in text_character:
                 t1 = font_message.render(t[1], True, (164, 64, 21))
                 screen.blit(t1, t[0])
             txt = font_message.render(text_message, True, (164, 64, 21))
-            screen.blit(txt, (keys_phrase[count_strok]))  
+            screen.blit(txt, (keys_phrase[count_strok]))
             if phraseWHAT != None:
                 button_OK(screen)
                 button_what(screen)
@@ -963,7 +976,8 @@ def game():
                 screen.blit(gift_image, (image_x, image_y))
         if flag_assambley_window:
             screen.blit(assambley_window, (0, 0))
-            game_level = load_level(level) # в game_level лежит не числовое значение уровня, а список приходящих клиентов
+            game_level = load_level(
+                level)  # в game_level лежит не числовое значение уровня, а список приходящих клиентов
             if d:
                 gift_image = gifts[random.randrange(7)]
                 checkboxes = pygame.sprite.Group()
@@ -975,11 +989,13 @@ def game():
                     comps = comps.split()
                     if comps[0] == "all":
                         comps = all_components
-                    components, checkboxes, dict_comps_and_checks, last_pos = load_receipt(comps, checkbox_uncheck, checkbox_check)
+                    components, checkboxes, dict_comps_and_checks, last_pos = load_receipt(comps, checkbox_uncheck,
+                                                                                           checkbox_check)
                     d = False
                 else:
                     n += 1
             if falling_image:
+                sound_fall.play()
                 rect = falling_image.get_rect()
                 y += 20
                 if rect.height > 360 - y > 0:
@@ -987,7 +1003,9 @@ def game():
                     crop = falling_image.subsurface(rect)
                     screen.blit(crop, (x, y))
                 elif y < 360:
-                    screen.blit(falling_image, (x, y))            
+                    screen.blit(falling_image, (x, y))
+                else:
+                    falling_image = False
             current_time = pygame.time.get_ticks()
             time = current_time - start_time
             clock_time = usual_clock(time)
@@ -998,7 +1016,7 @@ def game():
             checkboxes.update()
             components.update()
             checkboxes.draw(screen)
-            components.draw(screen) 
+            components.draw(screen)
         if flag_finish_day:
             screen.blit(finish_window, (0, 0))
             screen.blit(day_over_window, (300, 100))
@@ -1009,7 +1027,8 @@ def game():
             screen.blit(delta_stars, delta_stars_rect)
         clock.tick(20)
         pygame.display.update()
-    pygame.quit()    
-    
-    
+    pygame.quit()
+
+
+pygame.mixer.pre_init(44100, -16, 1, 512)
 game() 
